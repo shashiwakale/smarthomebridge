@@ -11,3 +11,4 @@ Alexa as a personal assistance to control home appliances. It uses FauxmoESP lib
 * [AutoConnect](https://github.com/Hieromon/AutoConnect)
 
 ### Circuit Diagram ###
+![alt text](docs/ConnectionDiagram.jpg?raw=true)
