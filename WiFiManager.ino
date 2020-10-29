@@ -1,7 +1,17 @@
-void ConfigButtonCheck()
+/*
+ * Function ID    : 01
+ * Function Name  : ConfigButtonCheck
+ * Description    : Checks input from config button to reset the wifi credentials
+ * Arguments      : -
+ * Return Value   : -
+*/
+boolean ConfigButtonCheck()
 {
+  boolean l_bRetValue = true;
+  // Check for button state
   if(!digitalRead(CONFIG_BUTTON))
   {
+    // Check for 3 Seconds
     for(int i = 0; i < 3; i++)
     {
       if(!digitalRead(CONFIG_BUTTON))
@@ -10,15 +20,18 @@ void ConfigButtonCheck()
       }
       delay(1000);
     }
+    // If Button is held for 3 sec then reset the wifi settings
     if(g_nResetButtonSec == 3)
     {
         Serial.println("External Reset Request Received");
-        digitalWrite(CONFIG_LED, HIGH);
         g_bResetFlag = true;
         ReadFile();
         delay(100);
-        WiFiConnection();
-        digitalWrite(CONFIG_LED, HIGH);
+        // Check wifi connection is established
+        if(!WiFiConnection())
+        {
+          l_bRetValue = false;
+        }
         g_nResetButtonSec = 0;
     }
     else
@@ -26,14 +39,30 @@ void ConfigButtonCheck()
       g_nResetButtonSec = 0;
     }
   }
+
+  return l_bRetValue;
 }
 
+/*
+ * Function ID    : 02
+ * Function Name  : SaveConfigCallbackFunction
+ * Description    : Callback function once user hits save button on portal
+ * Arguments      : -
+ * Return Value   : -
+*/
 void SaveConfigCallbackFunction () 
 {
   Serial.println("Should save config");
   g_bSaveConfig = true;
 }
 
+/*
+ * Function ID    : 03
+ * Function Name  : WiFiConnection
+ * Description    : Connects to WiFi network.
+ * Arguments      : -
+ * Return Value   : true if connection success, false if not success.
+*/
 boolean WiFiConnection() 
 {
   WiFiManager l_oWiFiManager;
@@ -109,8 +138,16 @@ boolean WiFiConnection()
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
   digitalWrite(CONFIG_LED, HIGH);
+  return 1;
 }
 
+/*
+ * Function ID    : 03
+ * Function Name  : ReadFile
+ * Description    : Reads file from flash ROM to get credential details.
+ * Arguments      : -
+ * Return Value   : -
+*/
 void ReadFile() 
 {
   //clean FS, for testing
